@@ -26,9 +26,28 @@ def bubble_sort(lst):
     - Continue until the list is sorted.
     - Return the sorted list.
     - Add meaningful comments.
-
     """
-    pass
+    result = lst.copy()  # Work on a copy so the original list is preserved.
+    n = len(result)
+
+    # Each pass moves the largest unsorted value to its final position.
+    for end in range(n - 1, 0, -1):
+        swapped = False
+
+        # Compare adjacent values within the unsorted portion.
+        for index in range(end):
+            if result[index] > result[index + 1]:
+                result[index], result[index + 1] = (
+                    result[index + 1],
+                    result[index],
+                )
+                swapped = True
+
+        # Stop early if a full pass did not require any swaps.
+        if not swapped:
+            break
+
+    return result
 
 
 def merge_sort(lst):
@@ -43,9 +62,18 @@ def merge_sort(lst):
     - Merge the sorted halves together.
     - Return the sorted list.
     - Add meaningful comments.
-
     """
-    pass
+    # Empty and one-element lists are already sorted (base case).
+    if len(lst) <= 1:
+        return lst.copy()
+
+    # Divide the list into two smaller halves.
+    midpoint = len(lst) // 2
+    left_half = merge_sort(lst[:midpoint])
+    right_half = merge_sort(lst[midpoint:])
+
+    # Combine the recursively sorted halves.
+    return merge(left_half, right_half)
 
 
 def merge(left, right):
@@ -60,7 +88,39 @@ def merge(left, right):
     - Return the merged sorted list.
     - Add meaningful comments.
     """
-    pass
+    result = []
+    left_index = 0
+    right_index = 0
+
+    # Repeatedly append the smaller next value from either sorted half.
+    # Choosing the left value on a tie preserves stability.
+    while left_index < len(left) and right_index < len(right):
+        if left[left_index] <= right[right_index]:
+            result.append(left[left_index])
+            left_index += 1
+        else:
+            result.append(right[right_index])
+            right_index += 1
+
+    # Add any values that remain in either half.
+    result.extend(left[left_index:])
+    result.extend(right[right_index:])
+    return result
+
+
+def display_comparison(dataset_name, values):
+    """Display both sorting results and verify that the input was unchanged."""
+    original = values.copy()
+    print(f"\n=== {dataset_name} ===")
+    print("Original:", values)
+
+    bubble_result = bubble_sort(values)
+    merge_result = merge_sort(values)
+
+    print("Bubble Sort:", bubble_result)
+    print("Merge Sort: ", merge_result)
+    print("Results match:", bubble_result == merge_result)
+    print("Original unchanged:", values == original)
 
 
 def main():
@@ -76,9 +136,8 @@ def main():
     # 3. Sort the list using Bubble Sort.
     # 4. Sort the same list using Merge Sort.
     # 5. Clearly label and display all results.
-
-    print("\n=== DATASET #1 ===")
-    print("TODO: Create an unsorted dataset and test both sorting algorithms.")
+    dataset_one = [42, 7, 19, 3, 28, 11, 35, 2]
+    display_comparison("DATASET #1", dataset_one)
 
     # ===============================
     # TODO (Student): DATASET #2
@@ -89,9 +148,8 @@ def main():
     # 2. Use different values than Dataset #1.
     # 3. Sort using both algorithms.
     # 4. Compare the results.
-
-    print("\n=== DATASET #2 ===")
-    print("TODO: Create a second dataset and compare sorting results.")
+    dataset_two = [5, 8, 12, 4, 9, 15, 14, 20, 18]
+    display_comparison("DATASET #2", dataset_two)
 
     # ===============================
     # TODO (Student): EDGE CASES
@@ -107,11 +165,28 @@ def main():
     # - Single-element list
     #
     # Explain what happens in each case.
+    edge_cases = [
+        ("Empty list", []),
+        ("Already sorted list", [1, 2, 3, 4, 5]),
+        ("Reverse-sorted list", [5, 4, 3, 2, 1]),
+        ("Duplicate values", [4, 2, 4, 1, 2, 1]),
+        ("Single-element list", [9]),
+    ]
 
     print("\n=== EDGE CASE TESTS ===")
-    print("TODO: Demonstrate and explain edge cases.")
+    for description, values in edge_cases:
+        bubble_result = bubble_sort(values)
+        merge_result = merge_sort(values)
+        print(f"{description}: {values}")
+        print(f"  Bubble Sort: {bubble_result}")
+        print(f"  Merge Sort:  {merge_result}")
+        print(f"  Results match: {bubble_result == merge_result}")
 
-
+    # Confirm that the sorting functions did not mutate their input.
+    original = [3, 1, 2]
+    bubble_sort(original)
+    merge_sort(original)
+    print("\nInput-preservation check:", original == [3, 1, 2])
 
 
 if __name__ == "__main__":
